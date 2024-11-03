@@ -1,0 +1,18 @@
+.arabicText {
+  margin: 0 auto;
+  width: fit-content;
+  font-family: "UthmanicRegular";
+  font-size: 46px;
+  text-align: center;
+}
+
+.englishText {
+  margin: 20px auto;
+  width: fit-content;
+  text-align: center;
+}
+
+.text {
+  max-width: 80vw;
+  margin: 0 auto;
+}
