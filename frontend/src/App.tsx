@@ -1,46 +1,68 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 
+const STARTING_SURAH = 89;
+const STARTING_AYAH = 1;
+
 function App() {
+  const [surahNumber, setSurahNumber] = useState(STARTING_SURAH);
+  const [ayahNumber, setAyahNumber] = useState(STARTING_AYAH);
+
   const [currentArabicText, setCurrentArabicText] = useState("");
   const [currentEnglishText, setCurrentEnglishText] = useState("");
 
-  const [surahNumber] = useState(2);
-  const [ayahNumber, setAyahNumber] = useState(1);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [audio] = useState(new Audio());
 
-  const [playing, setPlaying] = useState(false);
+  useEffect(() => {
+    if (isPlaying) {
+      startAyah()
+    }
+  }, [ayahNumber])
 
   useEffect(() => {
-    if (playing) {
-      startAudio();
+    if (isPlaying) {
+      startAyah();
+    } else {
+      audio.pause();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [playing, ayahNumber]);
+  }, [isPlaying])
 
-  async function play() {
-    setPlaying(true);
-  }
+  /* ---------- Helper Functions ---------- */
 
-  async function startAudio() {
-    // Get arabic and english text for current ayah, and set current text states
-    const [arabicText, englishText] = await Promise.all([
-      getAyahArabicText(surahNumber, ayahNumber),
-      getAyahEnglishText(surahNumber, ayahNumber),
-    ]);
-
-    setCurrentArabicText(arabicText);
-    setCurrentEnglishText(englishText);
+  // Play the current ayah
+  async function startAyah() {
+    // Retrieve & set current ayah text and translation
+    const ayahText = await getAyahText(surahNumber, ayahNumber);
+    setCurrentArabicText(ayahText.arabic);
+    setCurrentEnglishText(ayahText.english);
 
     // Play audio for current ayah
+    playAyahAudio();
+  }
+
+  // Plays the audio for current ayah, and increments the ayah number on finish
+  function playAyahAudio() {
     audio.src = getAyahAudioURL(surahNumber, ayahNumber);
     audio.play();
     audio.onended = () => {
+      audio.pause();
       setAyahNumber(ayahNumber + 1);
     };
   }
 
   /* ---------- API Data Getters ---------- */
+
+  async function getAyahText(surahNumber: number, ayahNumber: number) {
+    const [arabicText, englishText] = await Promise.all([
+      getAyahArabicText(surahNumber, ayahNumber),
+      getAyahEnglishText(surahNumber, ayahNumber),
+    ]);
+    return {
+      arabic: arabicText,
+      english: englishText
+    }
+  }
 
   async function getAyahArabicText(surahNumber: number, ayahNumber: number) {
     const response = await fetch(
@@ -62,8 +84,7 @@ function App() {
     return response.data.text;
   }
 
-  /* ---------- API URL Getters ---------- */
-
+  /* ---------- API URL Helpers ---------- */
   function getAyahArabicTextURL(surahNumber: number, ayahNumber: number) {
     return `https://api.alquran.cloud/v1/ayah/${surahNumber}:${ayahNumber}`;
   }
@@ -108,10 +129,13 @@ function App() {
 
   return (
     <div className="app">
-      <h1>QuranPrompt</h1>
-      <button onClick={play}>Start</button>
-      {playing && (
-        <div className="text">
+      <div className="button-container">
+        <button className="button" onClick={() => { setIsPlaying(cur => !cur) }}>Play/Pause</button>
+        <button className="button" onClick={() => { setAyahNumber(cur => cur - 1) }}>{'<'}</button>
+        <button className="button" onClick={() => { setAyahNumber(cur => cur + 1) }}>{'>'}</button>
+      </div>
+      {(
+        <div className="text-container">
           <p className="englishText">
             {surahNumber}:{ayahNumber}
           </p>
