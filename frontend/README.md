@@ -1,5 +1,6 @@
 # To get started
 
-1. Run `npm i`
-2. Create a `.env.local` file in the `frontend` folder containing `REACT_APP_OPENAI_API_KEY`
-3. Run `npm start`
+1. Navigate to the `frontend` folder
+2. Create a `.env.local` file containing `REACT_APP_OPENAI_API_KEY`
+3. Run `npm i`
+4. Run `npm start`
