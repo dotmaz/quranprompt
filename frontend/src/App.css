@@ -70,7 +70,7 @@
   font-family: "UthmanicRegular";
   font-size: 60px;
   text-align: center;
-  color: #333;
+  /* color: #333; */
 }
 
 .englishText {
@@ -79,5 +79,15 @@
   width: fit-content;
   text-align: center;
   font-weight: bold;
+  font-family: "Google Sans", sans-serif;
+  font-optical-sizing: auto;
   color: #333;
+}
+
+.surahName {
+  font-size: 40px;
+  font-family: "Playwrite NZ Basic", cursive;
+  font-optical-sizing: auto;
+  /* font-weight: <weight>;
+  font-style: normal; */
 }

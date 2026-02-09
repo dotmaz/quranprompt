@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import "./App.css";
+import surahNames from "./scripts/surahNames";
+
 
 import { z } from "zod";
 import { RunContext, Agent, AgentInputItem, Runner, withTrace, setDefaultOpenAIClient } from "@openai/agents";
@@ -126,6 +128,7 @@ function App() {
   }, [ayahNumber, surahNumber, surahRange, repeatAyahCount, repeatRangeCount, isPlaying])
 
   const [tick, setTick] = useState(false);
+  const surahName = surahNames[surahNumber.toString()];
 
   // When an ayah number chnages, start playing
   useEffect(() => {
@@ -315,6 +318,7 @@ function App() {
       </div>
       {(
         <div className="text-container">
+          <p className="englishText surahName">{surahName}</p>
           <p className="englishText">
             {surahNumber}:{ayahNumber}
           </p>
