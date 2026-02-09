@@ -1,4 +1,4 @@
-# To get started
+# To run locally
 
 1. Navigate to the `frontend` folder
 2. Create a `.env.local` file containing `REACT_APP_OPENAI_API_KEY`
