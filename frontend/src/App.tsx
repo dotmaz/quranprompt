@@ -46,8 +46,6 @@ const myAgent = new Agent({
 
 type WorkflowInput = { input_as_text: string };
 
-
-// Main code entrypoint
 export const runWorkflow = async (workflow: WorkflowInput) => {
   return await withTrace("Quran Range Assistant", async () => {
     const conversationHistory: AgentInputItem[] = [
@@ -90,9 +88,6 @@ export const runWorkflow = async (workflow: WorkflowInput) => {
 
 const STARTING_SURAH = 1;
 const STARTING_AYAH = 1;
-const STARTING_REPEAT_ON_AYAH_NUMBER = 30; // 30 ayahs in surah 86 fajr
-const STARTING_REPEAT_AYAH_COUNT = 1;
-const STARTING_REPEAT_RANGE_COUNT = 1;
 
 function App() {
   const [surahNumber, setSurahNumber] = useState(STARTING_SURAH);
