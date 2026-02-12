@@ -142,11 +142,11 @@ function App() {
       return;
     };
     if (ayahNumber <= 0) {
-      setAyahNumber(1);
+      setAyahNumber(numberOfAyahs);
       return;
     }
     if (ayahNumber > numberOfAyahs) {
-      setAyahNumber(numberOfAyahs);
+      setAyahNumber(1);
       return;
     }
     startAyah()
