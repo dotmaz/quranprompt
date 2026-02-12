@@ -3,9 +3,10 @@ import "./App.css";
 import surahNames from "./scripts/surahNames";
 
 
-import { z } from "zod";
+import { number, z } from "zod";
 import { RunContext, Agent, AgentInputItem, Runner, withTrace, setDefaultOpenAIClient } from "@openai/agents";
 import OpenAI from "openai";
+import { start } from "repl";
 
 type SurahRange = {
   surah: number;
@@ -94,6 +95,7 @@ const STARTING_AYAH = 1;
 function App() {
   const [surahNumber, setSurahNumber] = useState(STARTING_SURAH);
   const [ayahNumber, setAyahNumber] = useState(STARTING_AYAH);
+  const [numberOfAyahs, setNumberOfAyahs] = useState<number | null>(null);
 
   const [currentArabicText, setCurrentArabicText] = useState("");
   const [currentEnglishText, setCurrentEnglishText] = useState("");
@@ -111,6 +113,7 @@ function App() {
   const dataRef = useRef({
     ayahNumber,
     surahNumber,
+    numberOfAyahs,
     surahRange,
     repeatAyahCount,
     repeatRangeCount,
@@ -120,20 +123,34 @@ function App() {
     dataRef.current = {
       ayahNumber,
       surahNumber,
+      numberOfAyahs,
       surahRange,
       repeatAyahCount,
       repeatRangeCount,
       isPlaying
     }
-  }, [ayahNumber, surahNumber, surahRange, repeatAyahCount, repeatRangeCount, isPlaying])
+  }, [ayahNumber, surahNumber, numberOfAyahs, surahRange, repeatAyahCount, repeatRangeCount, isPlaying])
 
   const [tick, setTick] = useState(false);
   const surahName = surahNames[surahNumber.toString()];
 
   // When an ayah number chnages, start playing
   useEffect(() => {
+    const { numberOfAyahs } = dataRef.current;
+    if (numberOfAyahs === null) {
+      startAyah();
+      return;
+    };
+    if (ayahNumber <= 0) {
+      setAyahNumber(1);
+      return;
+    }
+    if (ayahNumber > numberOfAyahs) {
+      setAyahNumber(numberOfAyahs);
+      return;
+    }
     startAyah()
-  }, [ayahNumber, tick])
+  }, [ayahNumber, tick]);
 
   /* ---------- Helper Functions ---------- */
 
@@ -157,9 +174,13 @@ function App() {
 
   // Plays the audio for current ayah, and increments the ayah number on finish
   function playAyahAudio() {
-    const { ayahNumber, surahNumber, surahRange, repeatAyahCount, repeatRangeCount } = dataRef.current;
-    audio.src = getAyahAudioURL(surahNumber, ayahNumber);
-    audio.play();
+    const { ayahNumber, surahNumber, surahRange, repeatAyahCount, repeatRangeCount, numberOfAyahs } = dataRef.current;
+    try {
+      audio.src = getAyahAudioURL(surahNumber, ayahNumber);
+      audio.play();
+    } catch (error) {
+      return;
+    }
     audio.onended = () => {
       // No range selected; play sequential ayahs
       if (!surahRange) {
@@ -223,6 +244,14 @@ function App() {
     }
   }
 
+  function playPause() {
+    if (audio.paused) {
+      audio.play();
+    } else {
+      audio.pause();
+    }
+  }
+
   /* ---------- API Data Getters ---------- */
 
   async function getAyahText(surahNumber: number, ayahNumber: number) {
@@ -242,18 +271,27 @@ function App() {
     ).then((res) => res.json());
 
     // Perform arabic text modifications
-    let text = response.data.text;
-    text = textModificationRemoveBismillah(text, surahNumber, ayahNumber);
-    text = textModificationReplaceBrokenCharacters(text);
+    if (typeof response.data.text == "string") {
+      setNumberOfAyahs(response.data.surah.numberOfAyahs);
+      return textModificationReplaceBrokenCharacters(
+        textModificationRemoveBismillah(response.data.text, surahNumber, ayahNumber)
+      );
+    }
 
-    return text;
+    // Ayah doesnt exist (0 or i=len)
+    return '';
   }
 
   async function getAyahEnglishText(surahNumber: number, ayahNumber: number) {
     const response = await fetch(
       getAyahEnglishTextURL(surahNumber, ayahNumber)
     ).then((res) => res.json());
-    return response.data.text;
+    if (typeof response.data.text == "string") {
+      return response.data.text;
+    }
+
+    // Ayah doesnt exist (-1 or i=len)
+    return '';
   }
 
   /* ---------- API URL Helpers ---------- */
@@ -302,9 +340,9 @@ function App() {
   return (
     <div className="app">
       <div className="button-container">
-        <button className="button" onClick={() => { setIsPlaying(cur => !cur) }}>Play/Pause</button>
-        <button className="button" onClick={() => { setAyahNumber(cur => cur - 1) }}>{'<'}</button>
-        <button className="button" onClick={() => { setAyahNumber(cur => cur + 1) }}>{'>'}</button>
+        <button className="button" onClick={playPause}>Play/Pause</button>
+        <button className="button" onClick={() => { setAyahNumber(cur => cur - 1); setSurahRange(null); }}>{'<'}</button>
+        <button className="button" onClick={() => { setAyahNumber(cur => cur + 1); setSurahRange(null); }}>{'>'}</button>
       </div>
       <div className="text-input-container">
         <input
