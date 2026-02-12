@@ -252,6 +252,26 @@ function App() {
     }
   }
 
+  function nextAyah() {
+    const { surahRange } = dataRef.current;
+    if (surahRange === null) {
+      setAyahNumber(cur => cur + 1);
+    } else {
+      setAyahNumber(cur => cur + 1);
+      setSurahRange(null);
+    }
+  }
+
+  function previousAyah() {
+    const { surahRange } = dataRef.current;
+    if (surahRange === null) {
+      setAyahNumber(cur => cur - 1);
+    } else {
+      setAyahNumber(cur => cur - 1);
+      setSurahRange(null);
+    }
+  }
+
   /* ---------- API Data Getters ---------- */
 
   async function getAyahText(surahNumber: number, ayahNumber: number) {
@@ -341,8 +361,8 @@ function App() {
     <div className="app">
       <div className="button-container">
         <button className="button" onClick={playPause}>Play/Pause</button>
-        <button className="button" onClick={() => { setAyahNumber(cur => cur - 1); setSurahRange(null); }}>{'<'}</button>
-        <button className="button" onClick={() => { setAyahNumber(cur => cur + 1); setSurahRange(null); }}>{'>'}</button>
+        <button className="button" onClick={previousAyah}>{'<'}</button>
+        <button className="button" onClick={nextAyah}>{'>'}</button>
       </div>
       <div className="text-input-container">
         <input
