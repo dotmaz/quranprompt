@@ -1,4 +1,8 @@
-# To run locally
+# QuranPrompt
+
+An AI-powered quran memorization app that allows you to say what you'd like to listen to, with a play/pause that *doesn't* lose your place.
+
+## To run locally
 
 1. Navigate to the `frontend` folder
 2. Create a `.env.local` file containing `REACT_APP_OPENAI_API_KEY`
