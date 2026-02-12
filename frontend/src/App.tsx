@@ -3,6 +3,7 @@ import "./App.css";
 import surahNames from "./scripts/surahNames";
 import { FaPause, FaPlay, FaAngleLeft, FaAngleRight } from "react-icons/fa";
 console.log('node env', process.env.NODE_ENV)
+const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 const BACKEND_URL = process.env.NODE_ENV === 'development' ? "http://localhost:3001" : "https://quranprompt.onrender.com"
 const SESSION_ID = crypto.randomUUID();
 
@@ -262,6 +263,24 @@ function App() {
 
   return (
     <div className="app">
+      {IS_DEVELOPMENT && (
+        <div style={{
+          position: "fixed",
+          top: 10,
+          right: 10,
+          left: 10,
+          background: "orange",
+          color: "white",
+          padding: "6px 16px",
+          borderRadius: "8px",
+          fontWeight: "bold",
+          zIndex: 9999,
+          boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+          textAlign: 'center',
+        }}>
+          DEVELOPMENT
+        </div>
+      )}
       {/* Surah Range Modal */}
       {surahRange && (
         <div className="range-modal">
