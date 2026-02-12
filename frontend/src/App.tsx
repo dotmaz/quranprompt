@@ -3,7 +3,8 @@ import "./App.css";
 import surahNames from "./scripts/surahNames";
 import { FaPause, FaPlay, FaAngleLeft, FaAngleRight } from "react-icons/fa";
 
-const BACKEND = "http://localhost:3001";
+const BACKEND = "https://quranprompt.onrender.com";
+const SESSION_ID = crypto.randomUUID();
 
 type SurahRange = {
   surah: number;
@@ -157,7 +158,7 @@ function App() {
   async function playWithAI() {
     const surahRange: SurahRange = await fetch(`${BACKEND}/api/parse-range`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "x-session-id": SESSION_ID },
       body: JSON.stringify({ input_as_text: aiText }),
     }).then((r) => r.json());
 
