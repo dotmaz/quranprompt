@@ -391,8 +391,10 @@ function App() {
           <p className="englishText">
             {surahNumber}:{ayahNumber}
           </p>
-          <p className="arabicText">{currentArabicText}</p>
-          <p className="englishText">{currentEnglishText}</p>
+          <div className="ayah-text-container">
+            <p className="arabicText">{currentArabicText}</p>
+            <p className="englishText">{currentEnglishText}</p>
+          </div>
         </div>
       )}
     </div>

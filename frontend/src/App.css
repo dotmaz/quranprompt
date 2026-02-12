@@ -145,6 +145,13 @@
 
 /* MOBILE */
 @media (max-aspect-ratio: 1/1) {
+  html,
+  body,
+  #root,
+  .app {
+    overflow: hidden !important;
+  }
+
   .app {
     padding: 20px 12px;
   }
@@ -181,6 +188,13 @@
   /* Text display */
   .text-container {
     max-width: 95vw;
+    padding-bottom: 200px;
+  }
+
+  .ayah-text-container {
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+    height: 40vh;
   }
 
   .arabicText {
