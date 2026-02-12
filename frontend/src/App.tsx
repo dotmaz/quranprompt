@@ -2,8 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import "./App.css";
 import surahNames from "./scripts/surahNames";
 import { FaPause, FaPlay, FaAngleLeft, FaAngleRight } from "react-icons/fa";
-
-const BACKEND = "https://quranprompt.onrender.com";
+const BACKEND_URL = process.env.NODE_ENV === 'development' ? "http://localhost:3001" : "https://quranprompt.onrender.com"
 const SESSION_ID = crypto.randomUUID();
 
 type SurahRange = {
@@ -78,7 +77,7 @@ function App() {
       return;
     }
     startAyah()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ayahNumber, tick]);
 
   /* ---------- Helper Functions ---------- */
@@ -157,7 +156,7 @@ function App() {
   }
 
   async function playWithAI() {
-    const surahRange: SurahRange = await fetch(`${BACKEND}/api/parse-range`, {
+    const surahRange: SurahRange = await fetch(`${BACKEND_URL}/api/parse-range`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-session-id": SESSION_ID },
       body: JSON.stringify({ input_as_text: aiText }),
@@ -212,7 +211,7 @@ function App() {
   /* ---------- API Data Getters ---------- */
 
   async function getAyahText(surahNumber: number, ayahNumber: number) {
-    const response = await fetch(`${BACKEND}/api/ayah/${surahNumber}/${ayahNumber}`).then((r) => r.json());
+    const response = await fetch(`${BACKEND_URL}/api/ayah/${surahNumber}/${ayahNumber}`).then((r) => r.json());
     if (response.numberOfAyahs !== null) {
       setNumberOfAyahs(response.numberOfAyahs);
     }
