@@ -212,6 +212,7 @@ function App() {
 
         // Yes last ayah in range, and we just finished the last range repeat. DONE -- TURN OFF AUDIO!
         setIsPlaying(false);
+        setAudioPaused(true);
         setRepeatAyahCount(1);
         setRepeatRangeCount(1);
         setAyahNumber(surahRange.startAyah);
