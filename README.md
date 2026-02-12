@@ -1,7 +1,6 @@
 # QuranPrompt
 
-An AI-powered quran memorization app that allows you to say what you'd like to listen to, with a play/pause that *doesn't* lose your place.
-The next/previous does lose your place but that will be fixed soon :)
+An AI-powered quran memorization app that allows you to say what you'd like to listen to, with a pause button that *doesn't* lose your place.
 
 ## To run locally
 
