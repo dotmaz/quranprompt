@@ -13,6 +13,8 @@
   flex-direction: row;
   align-items: center;
   column-gap: 15px;
+  margin-top: 20px;
+
 }
 
 .button {
@@ -27,6 +29,13 @@
   cursor: pointer;
   transition-duration: 50ms;
 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button.icon {
+  font-size: 20px;
 }
 
 .button:hover {
@@ -43,7 +52,6 @@
   column-gap: 10px;
   align-items: center;
 
-  margin-top: 20px;
 }
 
 .input-text {

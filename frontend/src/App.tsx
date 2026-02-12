@@ -1,12 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import "./App.css";
 import surahNames from "./scripts/surahNames";
-
-
-import { number, z } from "zod";
+import { FaPause, FaPlay, FaAngleLeft, FaAngleRight } from "react-icons/fa";
+import { z } from "zod";
 import { RunContext, Agent, AgentInputItem, Runner, withTrace, setDefaultOpenAIClient } from "@openai/agents";
 import OpenAI from "openai";
-import { start } from "repl";
 
 type SurahRange = {
   surah: number;
@@ -89,8 +87,8 @@ export const runWorkflow = async (workflow: WorkflowInput) => {
 
 /*---------------------------------------*/
 
-const STARTING_SURAH = 1;
-const STARTING_AYAH = 1;
+const STARTING_SURAH = 0;
+const STARTING_AYAH = 0;
 
 function App() {
   const [surahNumber, setSurahNumber] = useState(STARTING_SURAH);
@@ -106,8 +104,9 @@ function App() {
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [audio] = useState(new Audio());
+  const [audioPaused, setAudioPaused] = useState(true);
 
-  const [aiText, setAiText] = useState('play shortest ayah in the quran twice');
+  const [aiText, setAiText] = useState('al fajr');
 
   // Keep an updated ref for async callbacks
   const dataRef = useRef({
@@ -160,8 +159,11 @@ function App() {
 
     if (!isPlaying) {
       audio.pause();
+      setAudioPaused(true);
       return;
     }
+
+    setAudioPaused(false);
 
     // Retrieve & set current ayah text and translation
     const ayahText = await getAyahText(surahNumber, ayahNumber);
@@ -247,8 +249,10 @@ function App() {
   function playPause() {
     if (audio.paused) {
       audio.play();
+      setAudioPaused(false);
     } else {
       audio.pause();
+      setAudioPaused(true);
     }
   }
 
@@ -359,12 +363,9 @@ function App() {
 
   return (
     <div className="app">
-      <div className="button-container">
-        <button className="button" onClick={playPause}>Play/Pause</button>
-        <button className="button" onClick={previousAyah}>{'<'}</button>
-        <button className="button" onClick={nextAyah}>{'>'}</button>
-      </div>
+      {/* AI Search */}
       <div className="text-input-container">
+        <button className="button" onClick={playWithAI}>Play with AI</button>
         <input
           type='text'
           className="input-text"
@@ -372,9 +373,31 @@ function App() {
           value={aiText}
           onChange={e => setAiText(e.target.value)}
         />
-        <button className="button" onClick={playWithAI}>Play with AI</button>
       </div>
-      {(
+
+      {/* Player Controls */}
+      <div className="button-container">
+        <button className="button" onClick={playPause}>
+          {audioPaused ?
+            // @ts-ignore
+            <FaPlay />
+            :
+            // @ts-ignore
+            <FaPause />
+          }
+        </button>
+        <button className="button icon" onClick={previousAyah}>
+          {// @ts-ignore
+            <FaAngleLeft />}
+        </button>
+        <button className="button icon" onClick={nextAyah}>
+          {// @ts-ignore
+            <FaAngleRight />}
+        </button>
+      </div>
+
+      {/* Surah Name / Ayah Text */}
+      {ayahNumber > 0 && surahNumber > 0 &&
         <div className="text-container">
           <p className="englishText surahName">{surahName}</p>
           <p className="englishText">
@@ -383,7 +406,7 @@ function App() {
           <p className="arabicText">{currentArabicText}</p>
           <p className="englishText">{currentEnglishText}</p>
         </div>
-      )}
+      }
     </div>
   );
 }
