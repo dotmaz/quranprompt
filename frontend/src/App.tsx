@@ -78,7 +78,8 @@ function App() {
       return;
     }
     startAyah()
-  }, [ayahNumber, tick, startAyah]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ayahNumber, tick]);
 
   /* ---------- Helper Functions ---------- */
 
