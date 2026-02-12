@@ -2,7 +2,7 @@
 
 An AI-powered quran memorization app that allows you to say what you'd like to listen to, with a pause button that *doesn't* lose your place.
 
-Use it for free and bankrupt me: https://quranprompt.vercel.app/
+Use it for free: https://quranprompt.vercel.app/
 
 
 ## To run locally
