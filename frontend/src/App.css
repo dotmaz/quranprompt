@@ -14,7 +14,6 @@
   align-items: center;
   column-gap: 15px;
   margin-top: 20px;
-
 }
 
 .button {
@@ -25,7 +24,7 @@
   border-radius: 7px;
   font-size: 15px;
   font-weight: bold;
-  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
   cursor: pointer;
   transition-duration: 50ms;
 
@@ -51,7 +50,6 @@
   flex-direction: row;
   column-gap: 10px;
   align-items: center;
-
 }
 
 .input-text {
@@ -107,7 +105,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
 }
 
 .range-modal-title {
@@ -143,4 +141,72 @@
   font-optical-sizing: auto;
   /* font-weight: <weight>;
   font-style: normal; */
+}
+
+/* MOBILE */
+@media (max-aspect-ratio: 1/1) {
+  .app {
+    padding: 20px 12px;
+  }
+
+  /* Input section: stack vertically */
+  .text-input-container {
+    flex-direction: column;
+    row-gap: 10px;
+    width: 100%;
+  }
+
+  .input-text {
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 16px; /* prevents iOS zoom on focus */
+  }
+
+  /* Player buttons */
+  .button-container {
+    margin-top: 16px;
+    column-gap: 12px;
+  }
+
+  .button {
+    height: 44px; /* min touch target */
+    padding: 0 20px;
+    font-size: 16px;
+  }
+
+  .button.icon {
+    font-size: 22px;
+  }
+
+  /* Text display */
+  .text-container {
+    max-width: 95vw;
+  }
+
+  .arabicText {
+    font-size: 36px;
+    line-height: 1.6;
+  }
+
+  .englishText {
+    font-size: 18px;
+  }
+
+  .surahName {
+    font-size: 28px;
+  }
+
+  /* Range modal: anchor to bottom as a sheet */
+  .range-modal {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transform: none;
+    border-radius: 14px 14px 0 0;
+    padding: 16px 20px 24px;
+    min-width: unset;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.12);
+  }
 }

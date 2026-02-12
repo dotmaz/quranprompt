@@ -306,6 +306,7 @@ function App() {
             zIndex: 9999,
             boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
             textAlign: "center",
+            opacity: 0.5,
           }}
         >
           DEVELOPMENT
