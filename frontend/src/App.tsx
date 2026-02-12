@@ -78,7 +78,7 @@ function App() {
       return;
     }
     startAyah()
-  }, [ayahNumber, tick]);
+  }, [ayahNumber, tick, startAyah]);
 
   /* ---------- Helper Functions ---------- */
 
