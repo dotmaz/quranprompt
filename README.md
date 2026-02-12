@@ -11,5 +11,6 @@ An AI-powered quran memorization app that allows you to say what you'd like to l
 5. Navigate to the `frontend` folder
 7. Run `npm i`
 8. Run `npm start`
+9. Navigate to `locahost:3000` in a browser
 <br><br>
 <img width="1333" height="688" alt="Capture" src="https://github.com/user-attachments/assets/4c09da9b-2fea-4912-8a0f-e6fe5e6cdec8" />
