@@ -1,10 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import "./App.css";
-import surahNames from "./scripts/surahNames";
+import surahNames from "./constants/surahNames";
 import { FaPause, FaPlay, FaAngleLeft, FaAngleRight } from "react-icons/fa";
-console.log('node env', process.env.NODE_ENV)
-const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
-const BACKEND_URL = process.env.NODE_ENV === 'development' ? "http://localhost:3001" : "https://quranprompt.onrender.com"
+console.log("node env", process.env.NODE_ENV);
+const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
+const BACKEND_URL =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:3001"
+    : "https://quranprompt.onrender.com";
 const SESSION_ID = crypto.randomUUID();
 
 type SurahRange = {
@@ -13,7 +16,7 @@ type SurahRange = {
   endAyah: number;
   repeatAyahCount: number;
   repeatRangeCount: number;
-}
+};
 
 /*---------------------------------------*/
 
@@ -36,7 +39,7 @@ function App() {
   const [audio] = useState(new Audio());
   const [audioPaused, setAudioPaused] = useState(true);
 
-  const [aiText, setAiText] = useState('al fajr');
+  const [aiText, setAiText] = useState("al fajr");
 
   // Keep an updated ref for async callbacks
   const dataRef = useRef({
@@ -46,7 +49,7 @@ function App() {
     surahRange,
     repeatAyahCount,
     repeatRangeCount,
-    isPlaying
+    isPlaying,
   });
   useEffect(() => {
     dataRef.current = {
@@ -56,9 +59,17 @@ function App() {
       surahRange,
       repeatAyahCount,
       repeatRangeCount,
-      isPlaying
-    }
-  }, [ayahNumber, surahNumber, numberOfAyahs, surahRange, repeatAyahCount, repeatRangeCount, isPlaying])
+      isPlaying,
+    };
+  }, [
+    ayahNumber,
+    surahNumber,
+    numberOfAyahs,
+    surahRange,
+    repeatAyahCount,
+    repeatRangeCount,
+    isPlaying,
+  ]);
 
   const [tick, setTick] = useState(false);
   const surahName = surahNames[surahNumber.toString()];
@@ -69,7 +80,7 @@ function App() {
     if (numberOfAyahs === null) {
       startAyah();
       return;
-    };
+    }
     if (ayahNumber <= 0) {
       setAyahNumber(numberOfAyahs);
       return;
@@ -78,7 +89,7 @@ function App() {
       setAyahNumber(1);
       return;
     }
-    startAyah()
+    startAyah();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ayahNumber, tick]);
 
@@ -107,7 +118,13 @@ function App() {
 
   // Plays the audio for current ayah, and increments the ayah number on finish
   function playAyahAudio() {
-    const { ayahNumber, surahNumber, surahRange, repeatAyahCount, repeatRangeCount } = dataRef.current;
+    const {
+      ayahNumber,
+      surahNumber,
+      surahRange,
+      repeatAyahCount,
+      repeatRangeCount,
+    } = dataRef.current;
     try {
       audio.src = getAyahAudioURL(surahNumber, ayahNumber);
       audio.play();
@@ -117,7 +134,7 @@ function App() {
     audio.onended = () => {
       // No range selected; play sequential ayahs
       if (!surahRange) {
-        setAyahNumber(prev => prev + 1);
+        setAyahNumber((prev) => prev + 1);
         return;
       }
 
@@ -125,18 +142,17 @@ function App() {
 
       // We haven't repeated the ayah enough times, play the same ayah again
       if (repeatAyahCount < surahRange.repeatAyahCount) {
-        setRepeatAyahCount(prev => prev + 1);
+        setRepeatAyahCount((prev) => prev + 1);
         startAyah();
         return;
       }
 
       // We repeated the ayah enough times. Is this the last ayah in the range?
       if (ayahNumber === surahRange.endAyah) {
-
         // Yes last ayah in range, but our range repeat count hasn't met the set one. Repeat the whole thing back at the starting ayah!
         if (repeatRangeCount < surahRange.repeatRangeCount) {
           setRepeatAyahCount(1);
-          setRepeatRangeCount(prev => prev + 1);
+          setRepeatRangeCount((prev) => prev + 1);
           setAyahNumber(surahRange.startAyah);
           return;
         }
@@ -152,17 +168,23 @@ function App() {
 
       // No not last ayah in the range, move on to the next ayah
       setRepeatAyahCount(1);
-      setAyahNumber(prev => prev + 1);
+      setAyahNumber((prev) => prev + 1);
       return;
     };
   }
 
   async function playWithAI() {
-    const surahRange: SurahRange = await fetch(`${BACKEND_URL}/api/parse-range`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-session-id": SESSION_ID },
-      body: JSON.stringify({ input_as_text: aiText }),
-    }).then((r) => r.json());
+    const surahRange: SurahRange = await fetch(
+      `${BACKEND_URL}/api/parse-range`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-session-id": SESSION_ID,
+        },
+        body: JSON.stringify({ input_as_text: aiText }),
+      },
+    ).then((r) => r.json());
 
     playSurahRange(surahRange);
   }
@@ -176,7 +198,7 @@ function App() {
     setRepeatRangeCount(1);
     setAyahNumber(surahRange.startAyah);
     if (ayahNumber === surahRange.startAyah) {
-      setTick(prev => !prev);
+      setTick((prev) => !prev);
     }
   }
 
@@ -193,9 +215,9 @@ function App() {
   function nextAyah() {
     const { surahRange } = dataRef.current;
     if (surahRange === null) {
-      setAyahNumber(cur => cur + 1);
+      setAyahNumber((cur) => cur + 1);
     } else {
-      setAyahNumber(cur => cur + 1);
+      setAyahNumber((cur) => cur + 1);
       setSurahRange(null);
     }
   }
@@ -203,9 +225,9 @@ function App() {
   function previousAyah() {
     const { surahRange } = dataRef.current;
     if (surahRange === null) {
-      setAyahNumber(cur => cur - 1);
+      setAyahNumber((cur) => cur - 1);
     } else {
-      setAyahNumber(cur => cur - 1);
+      setAyahNumber((cur) => cur - 1);
       setSurahRange(null);
     }
   }
@@ -213,13 +235,19 @@ function App() {
   /* ---------- API Data Getters ---------- */
 
   async function getAyahText(surahNumber: number, ayahNumber: number) {
-    const response = await fetch(`${BACKEND_URL}/api/ayah/${surahNumber}/${ayahNumber}`).then((r) => r.json());
+    const response = await fetch(
+      `${BACKEND_URL}/api/ayah/${surahNumber}/${ayahNumber}`,
+    ).then((r) => r.json());
     if (response.numberOfAyahs !== null) {
       setNumberOfAyahs(response.numberOfAyahs);
     }
     return {
       arabic: textModificationReplaceBrokenCharacters(
-        textModificationRemoveBismillah(response.arabic, surahNumber, ayahNumber)
+        textModificationRemoveBismillah(
+          response.arabic,
+          surahNumber,
+          ayahNumber,
+        ),
       ),
       english: response.english,
     };
@@ -239,7 +267,7 @@ function App() {
   function textModificationRemoveBismillah(
     text: string,
     surahNumber: number,
-    ayahNumber: number
+    ayahNumber: number,
   ) {
     if (surahNumber !== 1 && ayahNumber === 1) {
       return text.split(" ").slice(4).join(" "); // Remove bismillah from beginning of all surahs except Al-Fatiha
@@ -264,81 +292,99 @@ function App() {
   return (
     <div className="app">
       {IS_DEVELOPMENT && (
-        <div style={{
-          position: "fixed",
-          top: 10,
-          right: 10,
-          left: 10,
-          background: "orange",
-          color: "white",
-          padding: "6px 16px",
-          borderRadius: "8px",
-          fontWeight: "bold",
-          zIndex: 9999,
-          boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
-          textAlign: 'center',
-        }}>
+        <div
+          style={{
+            position: "fixed",
+            top: 10,
+            right: 10,
+            left: 10,
+            background: "orange",
+            color: "white",
+            padding: "6px 16px",
+            borderRadius: "8px",
+            fontWeight: "bold",
+            zIndex: 9999,
+            boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+            textAlign: "center",
+          }}
+        >
           DEVELOPMENT
         </div>
       )}
       {/* Surah Range Modal */}
       {surahRange && (
         <div className="range-modal">
-          <div className="range-modal-title">{surahNames[surahRange.surah.toString()]}</div>
+          <div className="range-modal-title">
+            {surahNames[surahRange.surah.toString()]}
+          </div>
           <div className="range-modal-row">
             <span className="range-modal-label">Current ayah</span>
             <span className="range-modal-value">{ayahNumber}</span>
           </div>
           <div className="range-modal-row">
             <span className="range-modal-label">Ayah range</span>
-            <span className="range-modal-value">{surahRange.startAyah === surahRange.endAyah ? surahRange.startAyah : `${surahRange.startAyah} – ${surahRange.endAyah}`}</span>
+            <span className="range-modal-value">
+              {surahRange.startAyah === surahRange.endAyah
+                ? surahRange.startAyah
+                : `${surahRange.startAyah} – ${surahRange.endAyah}`}
+            </span>
           </div>
           <div className="range-modal-row">
             <span className="range-modal-label">Ayah repeat</span>
-            <span className="range-modal-value">{repeatAyahCount} / {surahRange.repeatAyahCount}</span>
+            <span className="range-modal-value">
+              {repeatAyahCount} / {surahRange.repeatAyahCount}
+            </span>
           </div>
           <div className="range-modal-row">
             <span className="range-modal-label">Range repeat</span>
-            <span className="range-modal-value">{repeatRangeCount} / {surahRange.repeatRangeCount}</span>
+            <span className="range-modal-value">
+              {repeatRangeCount} / {surahRange.repeatRangeCount}
+            </span>
           </div>
         </div>
       )}
 
       {/* AI Search */}
       <div className="text-input-container">
-        <button className="button" onClick={playWithAI}>Play custom loop</button>
+        <button className="button" onClick={playWithAI}>
+          Play custom loop
+        </button>
         <input
-          type='text'
+          type="text"
           className="input-text"
-          placeholder='AI request'
+          placeholder="AI request"
           value={aiText}
-          onChange={e => setAiText(e.target.value)}
+          onChange={(e) => setAiText(e.target.value)}
         />
       </div>
 
       {/* Player Controls */}
       <div className="button-container">
         <button className="button" onClick={playPause}>
-          {audioPaused ?
+          {audioPaused ? (
             // @ts-ignore
             <FaPlay />
-            :
+          ) : (
             // @ts-ignore
             <FaPause />
-          }
+          )}
         </button>
         <button className="button icon" onClick={previousAyah}>
-          {// @ts-ignore
-            <FaAngleLeft />}
+          {
+            // @ts-ignore
+            <FaAngleLeft />
+          }
         </button>
         <button className="button icon" onClick={nextAyah}>
-          {// @ts-ignore
-            <FaAngleRight />}
+          {
+            // @ts-ignore
+            <FaAngleRight />
+          }
         </button>
       </div>
 
       {/* Surah Name / Ayah Text */}
-      {ayahNumber > 0 && surahNumber > 0 &&
+      {ayahNumber > 0 && surahNumber > 0 && (
         <div className="text-container">
           <p className="englishText surahName">{surahName}</p>
           <p className="englishText">
@@ -347,7 +393,7 @@ function App() {
           <p className="arabicText">{currentArabicText}</p>
           <p className="englishText">{currentEnglishText}</p>
         </div>
-      }
+      )}
     </div>
   );
 }
