@@ -5,4 +5,4 @@
 3. Run `npm i`
 4. Run `npm start`
 <br><br>
-<img width="1183" height="715" alt="quran" src="https://github.com/user-attachments/assets/667f6de4-f4cc-454c-8ddc-fbc36b2fa0da" />
+<img width="1148" height="611" alt="Capture" src="https://github.com/user-attachments/assets/f92df9af-578b-4ec6-9a4f-1c2b18658427" />
