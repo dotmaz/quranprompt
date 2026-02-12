@@ -363,9 +363,32 @@ function App() {
 
   return (
     <div className="app">
+      {/* Surah Range Modal */}
+      {surahRange && (
+        <div className="range-modal">
+          <div className="range-modal-title">{surahNames[surahRange.surah.toString()]}</div>
+          <div className="range-modal-row">
+            <span className="range-modal-label">Current ayah</span>
+            <span className="range-modal-value">{ayahNumber}</span>
+          </div>
+          <div className="range-modal-row">
+            <span className="range-modal-label">Ayah range</span>
+            <span className="range-modal-value">{surahRange.startAyah === surahRange.endAyah ? surahRange.startAyah : `${surahRange.startAyah} – ${surahRange.endAyah}`}</span>
+          </div>
+          <div className="range-modal-row">
+            <span className="range-modal-label">Ayah repeat</span>
+            <span className="range-modal-value">{repeatAyahCount} / {surahRange.repeatAyahCount}</span>
+          </div>
+          <div className="range-modal-row">
+            <span className="range-modal-label">Range repeat</span>
+            <span className="range-modal-value">{repeatRangeCount} / {surahRange.repeatRangeCount}</span>
+          </div>
+        </div>
+      )}
+
       {/* AI Search */}
       <div className="text-input-container">
-        <button className="button" onClick={playWithAI}>Play with AI</button>
+        <button className="button" onClick={playWithAI}>Play custom loop</button>
         <input
           type='text'
           className="input-text"
