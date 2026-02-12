@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
 import path from "path";
 import { z } from "zod";
@@ -77,8 +78,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const parseRateLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 5,
+  keyGenerator: (req) => (req.headers["x-session-id"] as string) || req.ip || "unknown",
+  message: { error: "Too many requests, please reload the page." },
+});
+
 // POST /api/parse-range  { input_as_text: string } => SurahRange
-app.post("/api/parse-range", async (req, res) => {
+app.post("/api/parse-range", parseRateLimiter, async (req, res) => {
   const { input_as_text } = req.body as { input_as_text: string };
   const surahRange = await runWorkflow(input_as_text);
   res.json(surahRange);
