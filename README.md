@@ -1,3 +1,6 @@
+
+<img width="1183" height="715" alt="quran" src="https://github.com/user-attachments/assets/667f6de4-f4cc-454c-8ddc-fbc36b2fa0da" />
+
 # To run locally
 
 1. Navigate to the `frontend` folder
