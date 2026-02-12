@@ -5,4 +5,4 @@
 3. Run `npm i`
 4. Run `npm start`
 <br><br>
-<img width="1148" height="611" alt="Capture" src="https://github.com/user-attachments/assets/f92df9af-578b-4ec6-9a4f-1c2b18658427" />
+<img width="1315" height="710" alt="Capture" src="https://github.com/user-attachments/assets/23002d83-b61f-4aad-b52f-33182ebd92bc" />
