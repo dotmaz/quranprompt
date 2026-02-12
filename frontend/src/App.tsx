@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import "./App.css";
 import surahNames from "./scripts/surahNames";
 import { FaPause, FaPlay, FaAngleLeft, FaAngleRight } from "react-icons/fa";
+console.log('node env', process.env.NODE_ENV)
 const BACKEND_URL = process.env.NODE_ENV === 'development' ? "http://localhost:3001" : "https://quranprompt.onrender.com"
 const SESSION_ID = crypto.randomUUID();
 
