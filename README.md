@@ -1,6 +1,7 @@
 # QuranPrompt
 
 Use it for free and make me broke: https://quranprompt.vercel.app/
+
 An AI-powered quran memorization app that allows you to say what you'd like to listen to, with a pause button that *doesn't* lose your place.
 
 ## To run locally
