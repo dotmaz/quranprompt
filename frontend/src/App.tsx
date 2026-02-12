@@ -2,9 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import "./App.css";
 import surahNames from "./scripts/surahNames";
 import { FaPause, FaPlay, FaAngleLeft, FaAngleRight } from "react-icons/fa";
-import { z } from "zod";
-import { RunContext, Agent, AgentInputItem, Runner, withTrace, setDefaultOpenAIClient } from "@openai/agents";
-import OpenAI from "openai";
+
+const BACKEND = "http://localhost:3001";
 
 type SurahRange = {
   surah: number;
@@ -13,77 +12,6 @@ type SurahRange = {
   repeatAyahCount: number;
   repeatRangeCount: number;
 }
-
-/* AGENT STUFF will be moved to backend */
-
-setDefaultOpenAIClient(new OpenAI({
-  apiKey: process.env.REACT_APP_OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true,
-}));
-
-const MyAgentSchema = z.object({ surah: z.number(), startAyah: z.number(), endAyah: z.number(), repeatAyahCount: z.number(), repeatRangeCount: z.number() });
-interface MyAgentContext {
-  workflowInputAsText: string;
-}
-const myAgentInstructions = (runContext: RunContext<MyAgentContext>, _agent: Agent<MyAgentContext, typeof MyAgentSchema>) => {
-  const { workflowInputAsText } = runContext.context;
-  return `Take the following request for a surah/ayah repeat configuration and output an object representing it.
-
-Request:
-${workflowInputAsText}`
-}
-const myAgent = new Agent({
-  name: "My agent",
-  instructions: myAgentInstructions,
-  model: "gpt-4.1",
-  outputType: MyAgentSchema,
-  modelSettings: {
-    temperature: 1,
-    topP: 1,
-    maxTokens: 2048,
-    store: true
-  }
-});
-
-type WorkflowInput = { input_as_text: string };
-
-export const runWorkflow = async (workflow: WorkflowInput) => {
-  return await withTrace("Quran Range Assistant", async () => {
-    const conversationHistory: AgentInputItem[] = [
-      { role: "user", content: [{ type: "input_text", text: workflow.input_as_text }] }
-    ];
-    const runner = new Runner({
-      traceMetadata: {
-        __trace_source__: "agent-builder",
-        workflow_id: "wf_698822a14b748190aca40246534c9d6701a89f2abaa5be26"
-      }
-    });
-    const myAgentResultTemp = await runner.run(
-      myAgent,
-      [
-        ...conversationHistory
-      ],
-      {
-        context: {
-          workflowInputAsText: workflow.input_as_text
-        }
-      }
-    );
-    conversationHistory.push(...myAgentResultTemp.newItems.map((item) => item.rawItem));
-
-    if (!myAgentResultTemp.finalOutput) {
-      throw new Error("Agent result is undefined");
-    }
-
-    const myAgentResult = {
-      output_text: JSON.stringify(myAgentResultTemp.finalOutput),
-      output_parsed: myAgentResultTemp.finalOutput
-    };
-
-    return myAgentResult;
-  });
-}
-
 
 /*---------------------------------------*/
 
@@ -133,7 +61,7 @@ function App() {
   const [tick, setTick] = useState(false);
   const surahName = surahNames[surahNumber.toString()];
 
-  // When an ayah number chnages, start playing
+  // When an ayah number changes, start playing
   useEffect(() => {
     const { numberOfAyahs } = dataRef.current;
     if (numberOfAyahs === null) {
@@ -176,7 +104,7 @@ function App() {
 
   // Plays the audio for current ayah, and increments the ayah number on finish
   function playAyahAudio() {
-    const { ayahNumber, surahNumber, surahRange, repeatAyahCount, repeatRangeCount, numberOfAyahs } = dataRef.current;
+    const { ayahNumber, surahNumber, surahRange, repeatAyahCount, repeatRangeCount } = dataRef.current;
     try {
       audio.src = getAyahAudioURL(surahNumber, ayahNumber);
       audio.play();
@@ -227,9 +155,11 @@ function App() {
   }
 
   async function playWithAI() {
-    const surahRange: SurahRange = (await runWorkflow({
-      input_as_text: aiText
-    })).output_parsed;
+    const surahRange: SurahRange = await fetch(`${BACKEND}/api/parse-range`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ input_as_text: aiText }),
+    }).then((r) => r.json());
 
     playSurahRange(surahRange);
   }
@@ -280,53 +210,19 @@ function App() {
   /* ---------- API Data Getters ---------- */
 
   async function getAyahText(surahNumber: number, ayahNumber: number) {
-    const [arabicText, englishText] = await Promise.all([
-      getAyahArabicText(surahNumber, ayahNumber),
-      getAyahEnglishText(surahNumber, ayahNumber),
-    ]);
+    const response = await fetch(`${BACKEND}/api/ayah/${surahNumber}/${ayahNumber}`).then((r) => r.json());
+    if (response.numberOfAyahs !== null) {
+      setNumberOfAyahs(response.numberOfAyahs);
+    }
     return {
-      arabic: arabicText,
-      english: englishText
-    }
-  }
-
-  async function getAyahArabicText(surahNumber: number, ayahNumber: number) {
-    const response = await fetch(
-      getAyahArabicTextURL(surahNumber, ayahNumber)
-    ).then((res) => res.json());
-
-    // Perform arabic text modifications
-    if (typeof response.data.text == "string") {
-      setNumberOfAyahs(response.data.surah.numberOfAyahs);
-      return textModificationReplaceBrokenCharacters(
-        textModificationRemoveBismillah(response.data.text, surahNumber, ayahNumber)
-      );
-    }
-
-    // Ayah doesnt exist (0 or i=len)
-    return '';
-  }
-
-  async function getAyahEnglishText(surahNumber: number, ayahNumber: number) {
-    const response = await fetch(
-      getAyahEnglishTextURL(surahNumber, ayahNumber)
-    ).then((res) => res.json());
-    if (typeof response.data.text == "string") {
-      return response.data.text;
-    }
-
-    // Ayah doesnt exist (-1 or i=len)
-    return '';
+      arabic: textModificationReplaceBrokenCharacters(
+        textModificationRemoveBismillah(response.arabic, surahNumber, ayahNumber)
+      ),
+      english: response.english,
+    };
   }
 
   /* ---------- API URL Helpers ---------- */
-  function getAyahArabicTextURL(surahNumber: number, ayahNumber: number) {
-    return `https://api.alquran.cloud/v1/ayah/${surahNumber}:${ayahNumber}`;
-  }
-
-  function getAyahEnglishTextURL(surahNumber: number, ayahNumber: number) {
-    return `https://api.alquran.cloud/v1/ayah/${surahNumber}:${ayahNumber}/en.asad`;
-  }
 
   function getAyahAudioURL(surahNumber: number, ayahNumber: number) {
     const audioFilename =
