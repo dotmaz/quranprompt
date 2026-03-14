@@ -8,12 +8,7 @@ Use it for free: https://quranprompt.vercel.app/
 ## To run locally
 
 1. Navigate to the `backend` folder
-2. Create a `.env` file containing `OPENAI_API_KEY` with your OpenAI API key
-3. Run `npm i`
-4. Run `npm start`
-5. Navigate to the `frontend` folder
-7. Run `npm i`
-8. Run `npm start`
-9. Open `locahost:3000` in a browser
+2. Put your API key into this command and run it: `echo "OPENAI_API_KEY=YOUR_API_KEY" > .env && npm i && npm start && cd frontend && npm i && npm start`
+3. Open `locahost:3000` in a browser
 <br><br>
 <img width="1333" height="688" alt="Capture" src="https://github.com/user-attachments/assets/4c09da9b-2fea-4912-8a0f-e6fe5e6cdec8" />
